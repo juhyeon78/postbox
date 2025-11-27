@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>계원예술대학교 건의함</title>
+    <title>계원예술대학교 소리함</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         /* --- Design System --- */
@@ -81,11 +81,19 @@
         .logo-text { font-family: 'Times New Roman', serif; font-weight: 900; color: #FFD700; font-size: 28px; text-shadow: 0 2px 2px rgba(0,0,0,0.3); letter-spacing: 2px; }
         .box-legs { position: absolute; bottom: -30px; width: 180px; display: flex; justify-content: space-between; }
         .leg { width: 25px; height: 60px; background: #8A0E26; border-radius: 0 0 5px 5px; }
-        /* Stamp Grid */
-        .stamp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+        
+        /* --- 수정된 부분: 우표 그리드 (한 줄에 4개) --- */
+        .stamp-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); /* 4열로 변경 */
+            gap: 8px; /* 간격 살짝 축소 */
+            margin-bottom: 24px; 
+        }
+        /* ------------------------------------------- */
+
         .stamp-btn {
             aspect-ratio: 1.1/1; position: relative; cursor: pointer;
-            background: #fff; padding: 6px;
+            background: #fff; padding: 4px; /* 패딩 살짝 축소 */
             background-image: radial-gradient(transparent 50%, var(--bg-app) 50%);
             background-size: 14px 14px; background-position: -7px -7px;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); transition: transform 0.2s;
@@ -205,10 +213,10 @@
                 <div class="box-legs"><div class="leg"></div><div class="leg"></div></div>
             </div>
             <div style="text-align: center; margin-bottom: 30px;">
-                <h2 style="font-family:'Jua'; margin-bottom:5px;">계원예술대학교 건의함</h2>
+                <h2 style="font-family:'Jua'; margin-bottom:5px;">계원 건의함</h2>
                 <p style="color:#888; font-size:14px;">우리들의 목소리를 담아</p>
             </div>
-            <button class="btn-main" onclick="goPage('page-write')">건의 하기</button>
+            <button class="btn-main" onclick="goPage('page-write')">편지 쓰기</button>
             <button onclick="goPage('page-list')" style="width:100%; padding:15px; background:none; border:none; color:#999; text-decoration:underline; cursor:pointer;">다른 학우들의 건의함 보기</button>
         </div>
 
@@ -255,7 +263,7 @@
         </div>
 
         <div id="page-list" class="page">
-            <h3 style="font-family:'Jua';">건의한 편지들</h3>
+            <h3 style="font-family:'Jua';">전달된 마음들</h3>
             <div id="loading-spinner" class="loading-spinner" style="display:none;"></div>
             <div class="grid-list" id="grid-container"></div>
             <div class="pagination" id="pagination-controls"></div>
@@ -290,7 +298,6 @@
 
     <script>
         // =============== CONFIGURATION ===============
-        // 따옴표와 괄호를 완벽하게 닫았습니다!
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkxHkMTAVjTeG1XEx1s9Difd9vz41XRGxR42Dmju50eq-UmgTymavibH_FBBnU27Z1/exec';
         // =============================================
 
