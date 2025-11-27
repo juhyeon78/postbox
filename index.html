@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>계원예술대학교 소리함</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- 🎨 Design System --- */
+        :root {
+            --bg-app: #F3EFE6;
+            --kaywon-red: #C41638;
+            --text-main: #333;
+            
+            /* 편지지 팔레트 */
+            --paper-pink: #FFD1D6;
+            --paper-mint: #D1FFEB;
+            --paper-lemon: #FFF9C4;
+            --paper-sky: #D1E8FF;
+
+            /* 우표 배경 컬러 */
+            --stamp-bg-orange: #F4A261;
+            --stamp-bg-teal: #5FA6A8;
+            --stamp-bg-red: #E76F6F;
+        }
+
+        * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0; padding: 0; background-color: #222;
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+            font-family: 'Nanum Myeongjo', serif;
+        }
+
+        /* 📱 App Frame */
+        .app-container {
+            width: 375px; height: 100vh; max-height: 844px;
+            background-color: var(--bg-app);
+            position: relative; overflow: hidden;
+            border-radius: 40px;
+            box-shadow: 0 0 0 12px #111, 0 30px 80px rgba(0,0,0,0.6);
+        }
+
+        /* --- Header --- */
+        .header {
+            height: 60px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;
+            position: absolute; top: 0; width: 100%; z-index: 50;
+            background: rgba(243, 239, 230, 0.9); backdrop-filter: blur(10px);
+        }
+        .logo { font-family: 'Jua'; font-size: 20px; color: var(--kaywon-red); letter-spacing: -0.5px; }
+        .btn-nav { background:none; border:none; font-size:24px; cursor:pointer; color:#333; padding:5px; }
+
+        /* --- Page Layout --- */
+        .page {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 70px 24px 20px; overflow-y: auto;
+            background: var(--bg-app);
+            transition: 0.3s ease-in-out;
+            opacity: 0; pointer-events: none; transform: translateX(20px);
+        }
+        .page.active { opacity: 1; pointer-events: auto; transform: translateX(0); z-index: 10; }
+
+        /* --- 📮 3D Postbox --- */
+        .postbox-graphic {
+            width: 220px; height: 340px; margin: 30px auto 40px;
+            position: relative; display: flex; justify-content: center;
+        }
+        .box-head {
+            position: absolute; top: 0; width: 220px; height: 120px;
+            background: linear-gradient(135deg, #E62E52 0%, #C41638 60%);
+            border-radius: 110px 110px 0 0; z-index: 2;
+            box-shadow: inset 10px 10px 15px rgba(255,255,255,0.25), inset -10px -5px 20px rgba(0,0,0,0.3);
+        }
+        .box-body {
+            position: absolute; top: 80px; width: 200px; height: 260px;
+            background: linear-gradient(90deg, #A80F2E 0%, #C41638 20%, #C41638 80%, #8A0E26 100%);
+            z-index: 1; display: flex; flex-direction: column; align-items: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        }
+        .slot-plate {
+            margin-top: 50px; width: 160px; height: 120px;
+            border: 2px solid rgba(0,0,0,0.1); border-radius: 8px;
+            background: rgba(0,0,0,0.1);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.2);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .slot-hole {
+            width: 130px; height: 14px; background: #220202; border-radius: 10px;
+            box-shadow: 0 2px 2px rgba(255,255,255,0.1); margin-bottom: 20px;
+        }
+        .logo-text { font-family: 'Times New Roman', serif; font-weight: 900; color: #FFD700; font-size: 28px; text-shadow: 0 2px 2px rgba(0,0,0,0.3); letter-spacing: 2px; }
+        .box-legs { position: absolute; bottom: -30px; width: 180px; display: flex; justify-content: space-between; }
+        .leg { width: 25px; height: 60px; background: #8A0E26; border-radius: 0 0 5px 5px; }
+
+        /* --- 🎨 Stamps & Write --- */
+        .stamp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 24px; }
+        .stamp-btn {
+            aspect-ratio: 1.1/1; position: relative; cursor: pointer;
+            background: #fff; padding: 6px;
+            background-image: radial-gradient(transparent 50%, var(--bg-app) 50%);
+            background-size: 14px 14px; background-position: -7px -7px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            transition: transform 0.2s;
+        }
+        .stamp-btn:active { transform: scale(0.95); }
+        .stamp-btn.selected { transform: scale(1.05) rotate(-2deg); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); z-index: 2; }
+        
+        .stamp-inner {
+            width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .stars { position: absolute; top:0; left:0; width:100%; height:100%; opacity:0.6; }
+        .bg-orange { background-color: var(--stamp-bg-orange); }
+        .bg-teal { background-color: var(--stamp-bg-teal); }
+        .bg-teal-2 { background-color: var(--stamp-bg-teal); }
+        .bg-red { background-color: var(--stamp-bg-red); }
+        .svg-icon { width: 60%; height: 60%; filter: drop-shadow(0 2px 0 rgba(0,0,0,0.1)); }
+
+        .color-row { display: flex; gap: 12px; margin-bottom: 15px; justify-content: center; }
+        .color-circle {
+            width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+            border: 2px solid rgba(0,0,0,0.1); box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .color-circle.active { border: 2px solid #555; transform: scale(1.1); }
+
+        .write-paper {
+            width: 100%; height: 260px; background: var(--paper-pink);
+            border-radius: 4px; padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: background 0.3s;
+        }
+        .paper-input {
+            width: 100%; height: 100%; border: none; background: transparent;
+            resize: none; outline: none; font-family: 'Nanum Myeongjo'; font-size: 16px; line-height: 30px;
+            background-image: linear-gradient(transparent 29px, rgba(0,0,0,0.1) 30px); background-size: 100% 30px;
+        }
+
+        /* --- List View & Pagination --- */
+        .grid-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .mini-env {
+            aspect-ratio: 1.4/1; background: var(--paper-pink);
+            border-radius: 3px; position: relative; cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.2s; overflow: hidden;
+        }
+        .mini-env::before {
+            content: ''; position: absolute; top:0; left:0; width: 100%; height: 100%;
+            background: linear-gradient(150deg, rgba(255,255,255,0.5) 45%, transparent 45%);
+            pointer-events: none;
+        }
+        .mini-stamp {
+            position: absolute; top: 4px; right: 4px; width: 18px; height: 22px;
+            background: white; border: 1px dotted #ccc; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Pagination Style */
+        .pagination { display: flex; justify-content: center; gap: 8px; padding-bottom: 40px; }
+        .page-dot {
+            width: 30px; height: 30px; border-radius: 50%; background: #fff;
+            border: 1px solid #ddd; display: flex; justify-content: center; align-items: center;
+            font-family: 'Jua'; font-size: 14px; color: #888; cursor: pointer;
+        }
+        .page-dot.active { background: var(--kaywon-red); color: white; border-color: var(--kaywon-red); }
+
+
+        /* --- Detail Page --- */
+        .detail-paper {
+            width: 100%; min-height: 400px; background: white;
+            padding: 80px 24px 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            position: relative; margin-top: 10px;
+            border-radius: 4px;
+        }
+        .detail-lines {
+            position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;
+            background-image: linear-gradient(transparent 31px, rgba(0,0,0,0.05) 32px);
+            background-size: 100% 32px;
+        }
+        .detail-text { 
+            font-size: 18px; line-height: 32px; color: #333; white-space: pre-wrap; 
+            position: relative; z-index: 1;
+        }
+        .detail-stamp {
+            position: absolute; top: 15px; right: 15px; width: 60px; height: 70px;
+            background: white; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center;
+            transform: rotate(10deg); box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+        .detail-stamp-icon { font-size: 30px; }
+
+        /* Buttons */
+        .btn-main {
+            width: 100%; padding: 18px; border: none; border-radius: 20px;
+            background: var(--kaywon-red); color: white;
+            font-family: 'Jua'; font-size: 18px; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(196, 22, 56, 0.3); margin-top: 20px;
+        }
+
+        /* --- Animation Layer --- */
+        .anim-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(243, 239, 230, 0.95); z-index: 100;
+            display: none; justify-content: center; align-items: flex-end;
+        }
+        .anim-postbox { margin-bottom: -400px; transition: margin 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: scale(0.9); }
+        .anim-letter {
+            width: 240px; height: 150px; background: var(--paper-pink);
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0; transition: all 0.6s ease;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 10;
+        }
+        .anim-letter::after { content: 'To. Kaywon'; font-family:'Jua'; color:rgba(0,0,0,0.3); }
+
+        .success-modal {
+            position: absolute; top: 40%; width: 100%; text-align: center;
+            opacity: 0; transition: 0.5s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="header">
+            <button class="btn-nav" id="btn-back" onclick="goHome()" style="opacity:0">⬅</button>
+            <div class="logo">K-POST</div>
+            <div style="width: 24px;"></div>
+        </header>
+
+        <div id="page-home" class="page active">
+            <div class="postbox-graphic">
+                <div class="box-head"></div>
+                <div class="box-body">
+                    <div class="slot-plate"><div class="slot-hole"></div><div class="logo-text">MAIL</div></div>
+                </div>
+                <div class="box-legs"><div class="leg"></div><div class="leg"></div></div>
+            </div>
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="font-family:'Jua'; margin-bottom:5px;">계원 건의함</h2>
+                <p style="color:#888; font-size:14px;">우리들의 목소리를 담아</p>
+            </div>
+            <button class="btn-main" onclick="goPage('page-write')">편지 쓰기</button>
+            <button onclick="goPage('page-list')" style="width:100%; padding:15px; background:none; border:none; color:#999; text-decoration:underline; cursor:pointer;">다른 학우들의 건의함 보기</button>
+        </div>
+
+        <div id="page-write" class="page">
+            <h3 style="font-family:'Jua'; margin-bottom:15px;">우표 선택</h3>
+            <div class="stamp-grid">
+                <div class="stamp-btn" onclick="selectStamp(this, 'aca')">
+                    <div class="stamp-inner bg-orange">
+                        <svg class="stars" width="100%" height="100%"><circle cx="20%" cy="20%" r="2" fill="white"/><circle cx="80%" cy="30%" r="2" fill="white"/></svg>
+                        <svg class="svg-icon" viewBox="0 0 100 100"><path d="M10,40 L50,15 L90,40 L50,65 Z" fill="#2C3E50"/><path d="M25,50 V70 Q25,80 50,80 Q75,80 75,70 V50" fill="#2C3E50"/><rect x="88" y="38" width="2" height="30" fill="#2C3E50"/></svg>
+                    </div>
+                </div>
+                <div class="stamp-btn" onclick="selectStamp(this, 'facil')">
+                    <div class="stamp-inner bg-teal">
+                        <svg class="stars" width="100%" height="100%"><circle cx="10%" cy="50%" r="2" fill="white"/></svg>
+                        <svg class="svg-icon" viewBox="0 0 100 100"><path d="M20,40 H80 V90 H20 Z" fill="#D32F2F"/><path d="M50,10 L20,40 H80 Z" fill="#D32F2F"/><rect x="30" y="50" width="10" height="15" fill="#B71C1C"/><rect x="60" y="50" width="10" height="15" fill="#B71C1C"/></svg>
+                    </div>
+                </div>
+                <div class="stamp-btn" onclick="selectStamp(this, 'welf')">
+                    <div class="stamp-inner bg-teal-2">
+                        <svg class="stars" width="100%" height="100%"><circle cx="20%" cy="80%" r="2" fill="white"/></svg>
+                        <svg class="svg-icon" viewBox="0 0 100 100"><path d="M50,85 C50,85 10,55 10,30 C10,15 25,10 35,20 C45,30 50,40 50,40 C50,40 55,30 65,20 C75,10 90,15 90,30 C90,55 50,85 50,85 Z" fill="#EC407A"/></svg>
+                    </div>
+                </div>
+                <div class="stamp-btn" onclick="selectStamp(this, 'etc')">
+                    <div class="stamp-inner bg-red">
+                        <svg class="stars" width="100%" height="100%"><circle cx="15%" cy="15%" r="2" fill="white"/></svg>
+                        <svg class="svg-icon" viewBox="0 0 100 100"><path d="M50,50 C30,30 10,40 20,60 C20,60 50,60 50,50 Z" fill="#2E7D32"/><path d="M50,50 C30,70 40,90 60,80 C60,80 60,50 50,50 Z" fill="#2E7D32"/><path d="M50,50 C70,70 90,60 80,40 C80,40 50,40 50,50 Z" fill="#2E7D32"/><path d="M50,50 C70,30 60,10 40,20 C40,20 40,50 50,50 Z" fill="#2E7D32"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="color-row">
+                <div class="color-circle active" style="background:var(--paper-pink)" onclick="setColor(this, 'var(--paper-pink)')"></div>
+                <div class="color-circle" style="background:var(--paper-mint)" onclick="setColor(this, 'var(--paper-mint)')"></div>
+                <div class="color-circle" style="background:var(--paper-lemon)" onclick="setColor(this, 'var(--paper-lemon)')"></div>
+                <div class="color-circle" style="background:var(--paper-sky)" onclick="setColor(this, 'var(--paper-sky)')"></div>
+            </div>
+
+            <div class="write-paper" id="paper-bg">
+                <textarea class="paper-input" id="msg-input" placeholder="내용을 입력해주세요."></textarea>
+            </div>
+
+            <button class="btn-main" onclick="sendLetter()">보내기</button>
+        </div>
+
+        <div id="page-list" class="page">
+            <h3 style="font-family:'Jua';">전달된 마음들</h3>
+            
+            <div class="grid-list" id="grid-container">
+                </div>
+
+            <div class="pagination" id="pagination-controls">
+                </div>
+        </div>
+
+        <div id="page-detail" class="page">
+            <h3 style="font-family:'Jua';">건의 내용</h3>
+            <div class="detail-paper" id="detail-paper-bg">
+                <div class="detail-lines"></div>
+                <div class="detail-stamp" id="detail-stamp-box">
+                    <span id="detail-stamp-emoji" class="detail-stamp-icon"></span>
+                </div>
+                <div class="detail-text" id="detail-content"></div>
+            </div>
+            <div style="text-align:right; margin-top:10px; color:#888; font-size:12px;" id="detail-date"></div>
+            <button class="btn-main" onclick="goPage('page-list')">목록으로</button>
+        </div>
+
+        <div class="anim-layer" id="anim-layer">
+            <div class="success-modal">
+                <div style="font-size:60px; margin-bottom:10px;">🎉</div>
+                <h2 style="font-family:'Jua'; color:var(--kaywon-red); margin:0;">접수 완료!</h2>
+                <button class="btn-main" style="width:150px; padding:12px; margin-top:20px; background:white; color:var(--kaywon-red); border:1px solid #ddd;" onclick="finishSuccess()">홈으로</button>
+            </div>
+            
+            <div class="anim-letter" id="anim-letter"></div>
+            <div class="postbox-graphic anim-postbox">
+                <div class="box-head"></div>
+                <div class="box-body"><div class="slot-plate"><div class="slot-hole"></div></div></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA ---
+        let posts = [];
+        const dummyTexts = [
+            "수강신청 서버 확충 부탁드립니다!", "디자인관 화장실 휴지 없어요.", "학식 메뉴 다양화 원합니다.", 
+            "야간 작업실 개방 시간 늘려주세요.", "고양이 급식소 관리 부탁드려요.", "교내 셔틀버스 배차 간격 조정 좀...",
+            "도서관 에어컨 너무 추워요.", "정수기 필터 교체 언제 하나요?", "졸업 전시회 지원금 관련 문의합니다.",
+            "매점 운영 시간 늘려주세요.", "흡연 구역 위치 조정 건의.", "강의실 의자가 너무 삐걱거려요.",
+            "와이파이가 너무 자주 끊깁니다.", "휴게실 소파 교체해주세요.", "학교 축제 라인업 추천해요!",
+            "운동장 잔디 관리 필요합니다.", "복사실 카드 결제 되게 해주세요.", "식수대 물이 안 시원해요.",
+            "동아리방 배정 언제 나오나요?", "학교 홈페이지 모바일 뷰 고쳐주세요.", "가로등 추가 설치 요청합니다.",
+            "기숙사 통금 시간 조정 건의.", "조형관 엘리베이터 점검 부탁드립니다.", "학생회비 사용 내역 투명하게 공개해주세요.",
+            "과제전 홍보 좀 더 적극적으로 해주세요.", "쓰레기통 분리수거함 늘려주세요.", "벤치 더 만들어주세요."
+        ];
+        const colors = ['var(--paper-pink)', 'var(--paper-mint)', 'var(--paper-lemon)', 'var(--paper-sky)'];
+        const types = ['aca', 'facil', 'welf', 'etc'];
+
+        // 더미 데이터 생성 (40개로 늘림)
+        for(let i=0; i<40; i++) {
+            posts.push({
+                id: i,
+                type: types[Math.floor(Math.random()*4)],
+                color: colors[Math.floor(Math.random()*4)],
+                txt: dummyTexts[Math.floor(Math.random()*dummyTexts.length)],
+                date: '2025.11.' + (27 - Math.floor(i/5))
+            });
+        }
+        posts.sort((a,b) => b.id - a.id);
+
+
+        let currentState = { selectedStamp: null, selectedColor: 'var(--paper-pink)' };
+        
+        // 페이지네이션 설정 변경 (9개 -> 18개)
+        let paginationState = {
+            currentPage: 1,
+            itemsPerPage: 18 
+        };
+
+        const stampIcons = { aca: '🎓', facil: '🏫', welf: '💖', etc: '🍀' };
+
+        // --- NAVIGATION ---
+        function goPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            const backBtn = document.getElementById('btn-back');
+            if(id === 'page-home') {
+                backBtn.style.opacity = '0';
+                backBtn.style.pointerEvents = 'none';
+            } else {
+                backBtn.style.opacity = '1';
+                backBtn.style.pointerEvents = 'auto';
+                backBtn.onclick = (id === 'page-detail') ? () => goPage('page-list') : () => goHome();
+            }
+
+            if(id === 'page-list') renderList();
+        }
+        function goHome() { goPage('page-home'); }
+
+        // --- WRITE ---
+        function selectStamp(el, type) {
+            document.querySelectorAll('.stamp-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            currentState.selectedStamp = type;
+        }
+        function setColor(el, color) {
+            document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            currentState.selectedColor = color;
+            document.getElementById('paper-bg').style.background = color;
+        }
+        function sendLetter() {
+            const txt = document.getElementById('msg-input').value;
+            if(!currentState.selectedStamp) { alert('우표를 선택해주세요!'); return; }
+            if(!txt) { alert('내용을 입력해주세요!'); return; }
+
+            const newPost = {
+                id: Date.now(),
+                type: currentState.selectedStamp,
+                color: currentState.selectedColor,
+                txt: txt,
+                date: new Date().toLocaleDateString()
+            };
+            posts.unshift(newPost);
+
+            const layer = document.getElementById('anim-layer');
+            const letter = document.getElementById('anim-letter');
+            letter.style.background = currentState.selectedColor;
+            layer.style.display = 'flex';
+
+            setTimeout(() => { document.querySelector('.anim-postbox').style.marginBottom = '0'; letter.style.opacity = '1'; letter.style.transform = 'translate(-50%, -50%) scale(1)'; }, 50);
+            setTimeout(() => { letter.style.top = '70%'; letter.style.transform = 'translate(-50%, -50%) scale(0.3) rotate(5deg)'; letter.style.opacity = '0'; }, 1200);
+            setTimeout(() => { document.querySelector('.success-modal').style.opacity = '1'; document.querySelector('.anim-postbox').style.marginBottom = '-400px'; }, 2000);
+        }
+        function finishSuccess() {
+            document.getElementById('msg-input').value = '';
+            document.querySelectorAll('.stamp-btn').forEach(b => b.classList.remove('selected'));
+            currentState.selectedStamp = null;
+            document.getElementById('anim-layer').style.display = 'none';
+            document.querySelector('.success-modal').style.opacity = '0';
+            goHome();
+        }
+
+        // --- LIST & PAGINATION LOGIC ---
+        function renderList() {
+            const container = document.getElementById('grid-container');
+            const paginationContainer = document.getElementById('pagination-controls');
+            container.innerHTML = '';
+            paginationContainer.innerHTML = '';
+
+            const totalItems = posts.length;
+            const totalPages = Math.ceil(totalItems / paginationState.itemsPerPage);
+            
+            if(paginationState.currentPage > totalPages) paginationState.currentPage = totalPages;
+            if(paginationState.currentPage < 1) paginationState.currentPage = 1;
+
+            const startIndex = (paginationState.currentPage - 1) * paginationState.itemsPerPage;
+            const endIndex = startIndex + paginationState.itemsPerPage;
+            const currentItems = posts.slice(startIndex, endIndex);
+
+            currentItems.forEach(post => {
+                const div = document.createElement('div');
+                div.className = 'mini-env';
+                div.style.background = post.color;
+                div.innerHTML = `<div class="mini-stamp">${stampIcons[post.type] || '📮'}</div>`;
+                div.onclick = () => showDetail(post);
+                container.appendChild(div);
+            });
+
+            // Pagination Buttons
+            for(let i=1; i<=totalPages; i++) {
+                const dot = document.createElement('div');
+                dot.className = `page-dot ${i === paginationState.currentPage ? 'active' : ''}`;
+                dot.innerText = i;
+                dot.onclick = () => {
+                    paginationState.currentPage = i;
+                    renderList();
+                };
+                paginationContainer.appendChild(dot);
+            }
+        }
+
+        function showDetail(post) {
+            document.getElementById('detail-content').innerText = post.txt;
+            document.getElementById('detail-paper-bg').style.background = post.color;
+            document.getElementById('detail-stamp-emoji').innerText = stampIcons[post.type];
+            document.getElementById('detail-date').innerText = post.date;
+            goPage('page-detail');
+        }
+
+    </script>
+</body>
+</html>
