@@ -6,7 +6,7 @@
     <title>계원예술대학교 소리함</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        /* --- 🎨 Design System --- */
+        /* --- Design System --- */
         :root {
             --bg-app: #F3EFE6;
             --kaywon-red: #C41638;
@@ -28,31 +28,27 @@
         
         body {
             margin: 0; padding: 0; 
-            /* PC 화면 배경색 (앱 밖의 여백) */
             background-color: #e0e0e0; 
             font-family: 'Nanum Myeongjo', serif;
             overflow: hidden; 
-            /* PC에서 중앙 정렬을 위한 설정 */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
 
-        /* 📱 App Frame (모바일 비율 고정) */
+        /* App Frame */
         .app-container {
             width: 100%;
             height: 100%;
-            /* 핵심: PC에서도 모바일 너비 유지 (최대 430px) */
             max-width: 430px; 
             background-color: var(--bg-app);
             position: relative; 
             overflow: hidden;
-            /* PC에서 앱을 띄웠을 때 그림자 효과로 구분 */
             box-shadow: 0 0 30px rgba(0,0,0,0.1);
         }
 
-        /* --- Header --- */
+        /* Header */
         .header {
             height: 60px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
             position: absolute; top: 0; width: 100%; z-index: 50;
@@ -62,7 +58,7 @@
         .logo { font-family: 'Jua'; font-size: 20px; color: var(--kaywon-red); letter-spacing: -0.5px; }
         .btn-nav { background:none; border:none; font-size:24px; cursor:pointer; color:#333; padding:5px; }
 
-        /* --- Page Layout --- */
+        /* Page Layout */
         .page {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             padding: 70px 20px 20px; overflow-y: auto;
@@ -71,11 +67,9 @@
             opacity: 0; pointer-events: none; transform: translateX(10px);
         }
         .page.active { opacity: 1; pointer-events: auto; transform: translateX(0); z-index: 10; }
-        
-        /* 스크롤바 숨기기 (깔끔하게) */
         .page::-webkit-scrollbar { display: none; }
 
-        /* --- 📮 3D Postbox --- */
+        /* Postbox Graphic */
         .postbox-graphic {
             width: 220px; height: 340px; margin: 20px auto 40px;
             position: relative; display: flex; justify-content: center;
@@ -107,7 +101,7 @@
         .box-legs { position: absolute; bottom: -30px; width: 180px; display: flex; justify-content: space-between; }
         .leg { width: 25px; height: 60px; background: #8A0E26; border-radius: 0 0 5px 5px; }
 
-        /* --- 🎨 Stamps & Write --- */
+        /* Stamps & Write */
         .stamp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
         .stamp-btn {
             aspect-ratio: 1.1/1; position: relative; cursor: pointer;
@@ -149,7 +143,7 @@
             background-image: linear-gradient(transparent 29px, rgba(0,0,0,0.1) 30px); background-size: 100% 30px;
         }
 
-        /* --- List View & Pagination --- */
+        /* List View */
         .grid-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
         .mini-env {
             aspect-ratio: 1.4/1; background: var(--paper-pink);
@@ -167,7 +161,7 @@
             background: white; border: 1px dotted #ccc; display: flex; align-items: center; justify-content: center;
         }
 
-        /* Pagination Style */
+        /* Pagination */
         .pagination { display: flex; justify-content: center; gap: 8px; padding-bottom: 40px; }
         .page-dot {
             width: 30px; height: 30px; border-radius: 50%; background: #fff;
@@ -176,8 +170,7 @@
         }
         .page-dot.active { background: var(--kaywon-red); color: white; border-color: var(--kaywon-red); }
 
-
-        /* --- Detail Page --- */
+        /* Detail Page */
         .detail-paper {
             width: 100%; min-height: 400px; background: white;
             padding: 80px 24px 40px;
@@ -211,7 +204,7 @@
         }
         .btn-main:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
 
-        /* --- Animation Layer --- */
+        /* Animation */
         .anim-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(243, 239, 230, 0.95); z-index: 100;
@@ -237,7 +230,6 @@
             width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
     </style>
 </head>
 <body>
@@ -346,9 +338,8 @@
 
     <script>
         // =============== CONFIGURATION ===============
-        // 여기에 배포한 Google Apps Script 웹 앱 URL을 붙여넣으세요.
-        // 따옴표 ' ' 안에 주소를 넣어야 합니다! (예: 'https://script.google.com/...')
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw3x6sh8m1czno-rLzQ4SfZco0bpzeeLovayCh8vhTDKaWmheKaMo5E1U84-a9hAR7O/exec'; 
+        // 보내주신 URL을 안전하게 넣었습니다. 절대 수정하지 마세요.
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw3x6sh8m1czno-rLzQ4SfZco0bpzeeLovayCh8vhTDKaWmheKaMo5E1U84-a9hAR7O/exec';
         // =============================================
 
         // --- STATE ---
