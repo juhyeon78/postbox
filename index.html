@@ -439,19 +439,23 @@
                 date: new Date().toLocaleDateString()
             };
 
-            // 구글 시트로 전송
+            // 1. 로컬 데이터에 먼저 추가 (즉시 보이게 하기 위함)
+            posts.unshift(newPost);
+
+            // 2. 구글 시트로 전송 (백그라운드)
             if(GOOGLE_SCRIPT_URL !== 'YOUR_SCRIPT_URL_HERE') {
                 try {
                     await fetch(GOOGLE_SCRIPT_URL, {
                         method: 'POST',
-                        mode: 'no-cors', 
+                        mode: 'no-cors', // CORS 에러 방지용 (필수)
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
                         body: JSON.stringify(newPost)
                     });
                 } catch(e) {
                     console.error("Error sending", e);
                 }
-            } else {
-                posts.unshift(newPost);
             }
 
             btn.disabled = false;
@@ -474,7 +478,9 @@
             currentState.selectedStamp = null;
             document.getElementById('anim-layer').style.display = 'none';
             document.querySelector('.success-modal').style.opacity = '0';
-            goHome();
+            
+            // 전송 후 바로 리스트로 가서 내 글 확인하기
+            goPage('page-list'); 
         }
 
         // --- FETCHING DATA ---
@@ -488,11 +494,17 @@
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 const data = await response.json();
-                posts = data;
+                
+                // 데이터 병합 로직 개선: 서버 데이터가 있으면 덮어쓰기
+                if(data && data.length > 0) {
+                    posts = data;
+                }
+                
                 renderList();
             } catch (error) {
                 console.error("Fetch error:", error);
-                if(posts.length === 0) loadDummyData();
+                // 에러나도 기존 로컬 데이터(방금 쓴 글 포함)는 유지
+                renderList();
             } finally {
                 spinner.style.display = 'none';
                 grid.style.opacity = '1';
